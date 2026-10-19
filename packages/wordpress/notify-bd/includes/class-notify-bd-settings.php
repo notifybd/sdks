@@ -98,6 +98,11 @@ class Notify_BD_Settings {
 		);
 	}
 
+	/**
+	 * Renders Settings → Notify.
+	 *
+	 * @return void
+	 */
 	public function render() {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
 			return;
@@ -165,6 +170,8 @@ class Notify_BD_Settings {
 	}
 
 	/**
+	 * Prints one password row, or a note when a wp-config.php constant supplies the value.
+	 *
 	 * @param string $key      Option key.
 	 * @param string $label    Row label.
 	 * @param string $stored   Stored value (never printed).
@@ -199,6 +206,11 @@ class Notify_BD_Settings {
 		<?php
 	}
 
+	/**
+	 * Handles the test-message form: checks the capability and nonce, then sends.
+	 *
+	 * @return void
+	 */
 	public function send_test() {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
 			wp_die( esc_html__( 'You do not have permission to do this.', 'notify-bd' ), '', array( 'response' => 403 ) );
@@ -222,6 +234,11 @@ class Notify_BD_Settings {
 		exit;
 	}
 
+	/**
+	 * Shows the result of the last test message, once.
+	 *
+	 * @return void
+	 */
 	private function render_notice() {
 		$key    = 'notify_bd_notice_' . get_current_user_id();
 		$notice = get_transient( $key );
@@ -236,6 +253,11 @@ class Notify_BD_Settings {
 		);
 	}
 
+	/**
+	 * Lists the most recent delivery events received by the webhook.
+	 *
+	 * @return void
+	 */
 	private function render_recent() {
 		$recent = get_option( Notify_BD_Webhook::RECENT_OPTION, array() );
 		if ( ! is_array( $recent ) || array() === $recent ) {

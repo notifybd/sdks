@@ -8,16 +8,33 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Client for the Notify REST API.
+ */
 class Notify_BD_Client {
 
 	const MAX_RETRIES = 2;
 
-	/** @var string */
+	/**
+	 * The API key sent as a bearer token.
+	 *
+	 * @var string
+	 */
 	private $api_key;
 
-	/** @var string */
+	/**
+	 * The API base URL, without a trailing slash.
+	 *
+	 * @var string
+	 */
 	private $base_url;
 
+	/**
+	 * Creates a client; both arguments default to the saved settings.
+	 *
+	 * @param string|null $api_key  API key.
+	 * @param string|null $base_url API base URL.
+	 */
 	public function __construct( $api_key = null, $base_url = null ) {
 		$this->api_key  = null === $api_key ? Notify_BD_Options::api_key() : $api_key;
 		$this->base_url = null === $base_url ? Notify_BD_Options::base_url() : untrailingslashit( $base_url );
@@ -44,6 +61,8 @@ class Notify_BD_Client {
 	}
 
 	/**
+	 * Fetches a message by id.
+	 *
 	 * @param string $id Message id.
 	 * @return array<string,mixed>|WP_Error
 	 */
@@ -52,6 +71,8 @@ class Notify_BD_Client {
 	}
 
 	/**
+	 * Sends one request, retrying what is safe to retry.
+	 *
 	 * @param string                   $method    HTTP method.
 	 * @param string                   $path      Path below the base URL.
 	 * @param array<string,mixed>|null $body      JSON body.
@@ -111,6 +132,8 @@ class Notify_BD_Client {
 	}
 
 	/**
+	 * Builds a WP_Error from an API error response.
+	 *
 	 * @param int        $status   HTTP status.
 	 * @param mixed      $data     Decoded body.
 	 * @param array|null $response WordPress HTTP response.
@@ -133,12 +156,25 @@ class Notify_BD_Client {
 		);
 	}
 
+	/**
+	 * Jittered exponential delay before a retry, in microseconds.
+	 *
+	 * @param int $attempt Zero-based attempt number.
+	 * @return int
+	 */
 	private function backoff( $attempt ) {
 		$ceiling = (int) min( 4000000, 500000 * pow( 2, $attempt ) );
 
 		return (int) ( $ceiling / 2 + wp_rand( 0, (int) ( $ceiling / 2 ) ) );
 	}
 
+	/**
+	 * Delay before retrying a response: Retry-After when present (capped), otherwise backoff.
+	 *
+	 * @param array $response WordPress HTTP response.
+	 * @param int   $attempt  Zero-based attempt number.
+	 * @return int Microseconds.
+	 */
 	private function retry_delay( $response, $attempt ) {
 		$header = wp_remote_retrieve_header( $response, 'retry-after' );
 		if ( is_numeric( $header ) && (float) $header > 0 ) {
