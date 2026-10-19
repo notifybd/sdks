@@ -11,6 +11,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * The REST route that receives and verifies Notify's webhooks.
+ */
 class Notify_BD_Webhook {
 
 	const ROUTE_NAMESPACE = 'notify-bd/v1';
@@ -18,14 +21,29 @@ class Notify_BD_Webhook {
 	const RECENT_OPTION   = 'notify_bd_recent_events';
 	const RECENT_LIMIT    = 20;
 
+	/**
+	 * Hooks the route registration into WordPress.
+	 *
+	 * @return void
+	 */
 	public function register() {
 		add_action( 'rest_api_init', array( $this, 'register_route' ) );
 	}
 
+	/**
+	 * The public URL to register in the Notify portal.
+	 *
+	 * @return string
+	 */
 	public static function url() {
 		return rest_url( self::ROUTE_NAMESPACE . self::ROUTE );
 	}
 
+	/**
+	 * Registers POST /notify-bd/v1/webhook.
+	 *
+	 * @return void
+	 */
 	public function register_route() {
 		register_rest_route(
 			self::ROUTE_NAMESPACE,
@@ -40,6 +58,8 @@ class Notify_BD_Webhook {
 	}
 
 	/**
+	 * Verifies the signature, ignores repeats and fires the status actions.
+	 *
 	 * @param WP_REST_Request $request The request.
 	 * @return WP_REST_Response|WP_Error
 	 */

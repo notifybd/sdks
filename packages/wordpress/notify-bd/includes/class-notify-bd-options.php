@@ -13,12 +13,17 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Reads the plugin's settings, with wp-config.php constants taking precedence.
+ */
 class Notify_BD_Options {
 
 	const OPTION          = 'notify_bd_settings';
 	const DEFAULT_API_URL = 'https://api.notify.example/v1';
 
 	/**
+	 * All stored settings, with defaults filled in.
+	 *
 	 * @return array<string,string>
 	 */
 	public static function all() {
@@ -35,14 +40,29 @@ class Notify_BD_Options {
 		);
 	}
 
+	/**
+	 * The API key: the NOTIFY_BD_API_KEY constant if defined, otherwise the stored setting.
+	 *
+	 * @return string
+	 */
 	public static function api_key() {
 		return defined( 'NOTIFY_BD_API_KEY' ) ? (string) NOTIFY_BD_API_KEY : self::all()['api_key'];
 	}
 
+	/**
+	 * The webhook signing secret: the constant if defined, otherwise the stored setting.
+	 *
+	 * @return string
+	 */
 	public static function webhook_secret() {
 		return defined( 'NOTIFY_BD_WEBHOOK_SECRET' ) ? (string) NOTIFY_BD_WEBHOOK_SECRET : self::all()['webhook_secret'];
 	}
 
+	/**
+	 * The default sender ID used when a send does not name one.
+	 *
+	 * @return string
+	 */
 	public static function sender_id() {
 		return self::all()['sender_id'];
 	}
