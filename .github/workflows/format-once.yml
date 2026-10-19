@@ -1,0 +1,32 @@
+name: format-once
+# One-off: runs the PHP auto-fixers and commits the result. Triggers only when this file is pushed,
+# and is deleted again right after.
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/format-once.yml"]
+permissions: { contents: write }
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: "8.3", tools: composer }
+      - name: PHP SDK (php-cs-fixer)
+        working-directory: packages/php
+        run: composer install --no-interaction --prefer-dist && vendor/bin/php-cs-fixer fix
+      - name: WordPress plugin (phpcbf)
+        working-directory: packages/wordpress
+        run: |
+          composer install --no-interaction --prefer-dist
+          vendor/bin/phpcbf --standard=WordPress notify-bd || true   # exits 1 when it fixed something
+          vendor/bin/phpcs --standard=WordPress notify-bd || true    # whatever is left, for the log
+      - name: Commit the fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A packages
+          git diff --cached --quiet && { echo "Nothing to fix"; exit 0; }
+          git commit -m "style: apply php-cs-fixer and phpcbf fixes"
+          git push
