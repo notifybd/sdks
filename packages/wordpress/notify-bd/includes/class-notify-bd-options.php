@@ -67,13 +67,23 @@ class Notify_BD_Options {
 		return self::all()['sender_id'];
 	}
 
+	/**
+	 * The API base URL: the NOTIFY_BD_BASE_URL constant, the stored setting, or the production default.
+	 *
+	 * @return string
+	 */
 	public static function base_url() {
 		$url = defined( 'NOTIFY_BD_BASE_URL' ) ? (string) NOTIFY_BD_BASE_URL : self::all()['base_url'];
 
 		return '' !== $url ? untrailingslashit( $url ) : self::DEFAULT_API_URL;
 	}
 
-	/** True when the value comes from wp-config.php and cannot be edited on screen. */
+	/**
+	 * True when the value comes from wp-config.php and cannot be edited on screen.
+	 *
+	 * @param string $key Option key (api_key, webhook_secret or base_url).
+	 * @return bool
+	 */
 	public static function is_locked( $key ) {
 		$constants = array(
 			'api_key'        => 'NOTIFY_BD_API_KEY',

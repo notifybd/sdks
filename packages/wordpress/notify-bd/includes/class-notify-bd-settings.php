@@ -8,6 +8,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * The Settings → Notify screen and its test-message handler.
+ */
 class Notify_BD_Settings {
 
 	const PAGE         = 'notify-bd';
@@ -16,6 +19,11 @@ class Notify_BD_Settings {
 	const CAPABILITY   = 'manage_options';
 	const NOTICE_QUERY = 'notify_bd_notice';
 
+	/**
+	 * Hooks the screen, the settings and the test-message handler into WordPress.
+	 *
+	 * @return void
+	 */
 	public function register() {
 		add_action( 'admin_menu', array( $this, 'add_page' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
@@ -23,6 +31,11 @@ class Notify_BD_Settings {
 		add_filter( 'plugin_action_links_' . plugin_basename( NOTIFY_BD_FILE ), array( $this, 'action_links' ) );
 	}
 
+	/**
+	 * Adds Settings → Notify.
+	 *
+	 * @return void
+	 */
 	public function add_page() {
 		add_options_page(
 			__( 'Notify', 'notify-bd' ),
@@ -34,6 +47,8 @@ class Notify_BD_Settings {
 	}
 
 	/**
+	 * Adds a Settings link on the Plugins screen.
+	 *
 	 * @param string[] $links Existing links.
 	 * @return string[]
 	 */
@@ -43,6 +58,11 @@ class Notify_BD_Settings {
 		return $links;
 	}
 
+	/**
+	 * Registers the option and its sanitizer.
+	 *
+	 * @return void
+	 */
 	public function register_settings() {
 		register_setting(
 			self::GROUP,

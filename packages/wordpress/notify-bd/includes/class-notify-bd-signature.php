@@ -10,6 +10,9 @@
 
 defined( 'ABSPATH' ) || defined( 'NOTIFY_BD_TESTING' ) || exit;
 
+/**
+ * Verifies the X-Notify-Signature header of a webhook.
+ */
 class Notify_BD_Signature {
 
 	const MALFORMED_HEADER            = 'malformed_header';
@@ -51,6 +54,8 @@ class Notify_BD_Signature {
 	}
 
 	/**
+	 * Splits the header into its timestamp and v1 signatures.
+	 *
 	 * @param string|null $header Raw header value.
 	 * @return array{0:int,1:string[]}|null
 	 */
