@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+vendor/
+composer.lock
+.phpunit.result.cache
+.php-cs-fixer.cache
+*.zip
+.DS_Store
+.env

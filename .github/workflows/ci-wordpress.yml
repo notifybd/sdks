@@ -1,0 +1,22 @@
+name: ci-wordpress
+on:
+  push: { branches: [main], paths: ["packages/wordpress/**", "spec/**", ".github/workflows/ci-wordpress.yml"] }
+  pull_request: { paths: ["packages/wordpress/**", "spec/**", ".github/workflows/ci-wordpress.yml"] }
+permissions: { contents: read }
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: { php: ["7.4", "8.1", "8.3"] }
+    defaults: { run: { working-directory: packages/wordpress } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: "${{ matrix.php }}", tools: composer }
+      - run: composer install --no-interaction --prefer-dist
+      - run: composer test
+      - run: composer lint
+        if: matrix.php == '8.3'
+      - name: PHP syntax check
+        run: find notify-bd -name '*.php' -print0 | xargs -0 -n1 php -l

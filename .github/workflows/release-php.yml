@@ -1,0 +1,30 @@
+name: release-php
+# Packagist needs composer.json at a repository root, so packages/php is mirrored (read-only) to
+# notifybd/notify-php. Packagist watches the mirror. Nobody commits to the mirror directly.
+on: { push: { tags: ["php-v*"] } }
+permissions: { contents: write }
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - run: node scripts/check-version.mjs php "${GITHUB_REF_NAME#php-v}"
+      - run: scripts/check-placeholders.sh
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: "8.3", tools: composer }
+      - run: composer install --no-interaction && composer test && composer stan
+        working-directory: packages/php
+      - name: Push the subtree to the mirror and tag it
+        env: { DEPLOY_KEY: "${{ secrets.PHP_MIRROR_DEPLOY_KEY }}" }
+        run: |
+          version="${GITHUB_REF_NAME#php-}"
+          mkdir -p ~/.ssh && echo "$DEPLOY_KEY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          git config user.name "notify-release-bot" && git config user.email "bot@users.noreply.github.com"
+          git subtree split --prefix=packages/php -b php-split
+          git remote add mirror git@github.com:notifybd/notify-php.git
+          git push mirror php-split:main --force
+          git push mirror "php-split:refs/tags/${version}" --force
+      - uses: softprops/action-gh-release@v2
+        with: { generate_release_notes: true }

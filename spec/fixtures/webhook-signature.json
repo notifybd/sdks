@@ -1,0 +1,104 @@
+{
+  "description": "Shared webhook-signature vectors. Signature = HMAC-SHA256(secret, `${t}.${rawBody}`), hex, header `t=<unix>,v1=<hex>`. Every SDK's test suite loads this file.",
+  "secret": "whsec_test_4eC39HqLyjWDarjtT1zdp7dc",
+  "now": 1767225600,
+  "toleranceSeconds": 300,
+  "rawBody": "{\"eventId\":\"018f0000-0000-7000-8000-000000000010\",\"eventName\":\"message.delivered\",\"eventVersion\":1,\"occurredAt\":\"2026-01-01T00:00:00.000Z\",\"correlationId\":\"018f0000-0000-7000-8000-000000000011\",\"payload\":{\"messageId\":\"018f0000-0000-7000-8000-000000000012\",\"businessId\":\"018f0000-0000-7000-8000-000000000013\",\"status\":\"delivered\",\"channel\":\"app\",\"reason\":null}}",
+  "cases": [
+    {
+      "name": "valid signature",
+      "header": "t=1767225600,v1=1c289e8330d294bae243d212670df5f416760a25a4d5d0fb20aa39153157a93e",
+      "now": 1767225600,
+      "valid": true
+    },
+    {
+      "name": "valid, inside the tolerance window",
+      "header": "t=1767225600,v1=1c289e8330d294bae243d212670df5f416760a25a4d5d0fb20aa39153157a93e",
+      "now": 1767225899,
+      "valid": true
+    },
+    {
+      "name": "valid during secret rotation (two v1 values, one matches)",
+      "header": "t=1767225600,v1=696136d28a492aece7620c06b2652dccee657dd5243b15379e29e637f6346ce2,v1=1c289e8330d294bae243d212670df5f416760a25a4d5d0fb20aa39153157a93e",
+      "now": 1767225600,
+      "valid": true
+    },
+    {
+      "name": "valid, parts in a different order",
+      "header": "v1=1c289e8330d294bae243d212670df5f416760a25a4d5d0fb20aa39153157a93e,t=1767225600",
+      "now": 1767225600,
+      "valid": true
+    },
+    {
+      "name": "timestamp too old (replay)",
+      "header": "t=1767225600,v1=1c289e8330d294bae243d212670df5f416760a25a4d5d0fb20aa39153157a93e",
+      "now": 1767225901,
+      "valid": false,
+      "reason": "timestamp_outside_tolerance"
+    },
+    {
+      "name": "timestamp too far in the future",
+      "header": "t=1767225600,v1=1c289e8330d294bae243d212670df5f416760a25a4d5d0fb20aa39153157a93e",
+      "now": 1767225299,
+      "valid": false,
+      "reason": "timestamp_outside_tolerance"
+    },
+    {
+      "name": "wrong secret",
+      "header": "t=1767225600,v1=696136d28a492aece7620c06b2652dccee657dd5243b15379e29e637f6346ce2",
+      "now": 1767225600,
+      "valid": false,
+      "reason": "signature_mismatch"
+    },
+    {
+      "name": "tampered body",
+      "header": "t=1767225600,v1=1c289e8330d294bae243d212670df5f416760a25a4d5d0fb20aa39153157a93e",
+      "now": 1767225600,
+      "rawBody": "{\"eventId\":\"018f0000-0000-7000-8000-000000000010\",\"eventName\":\"message.failed\",\"eventVersion\":1,\"occurredAt\":\"2026-01-01T00:00:00.000Z\",\"correlationId\":\"018f0000-0000-7000-8000-000000000011\",\"payload\":{\"messageId\":\"018f0000-0000-7000-8000-000000000012\",\"businessId\":\"018f0000-0000-7000-8000-000000000013\",\"status\":\"delivered\",\"channel\":\"app\",\"reason\":null}}",
+      "valid": false,
+      "reason": "signature_mismatch"
+    },
+    {
+      "name": "timestamp changed after signing",
+      "header": "t=1767225601,v1=1c289e8330d294bae243d212670df5f416760a25a4d5d0fb20aa39153157a93e",
+      "now": 1767225601,
+      "valid": false,
+      "reason": "signature_mismatch"
+    },
+    {
+      "name": "missing v1",
+      "header": "t=1767225600",
+      "now": 1767225600,
+      "valid": false,
+      "reason": "malformed_header"
+    },
+    {
+      "name": "missing t",
+      "header": "v1=1c289e8330d294bae243d212670df5f416760a25a4d5d0fb20aa39153157a93e",
+      "now": 1767225600,
+      "valid": false,
+      "reason": "malformed_header"
+    },
+    {
+      "name": "non-numeric timestamp",
+      "header": "t=abc,v1=1c289e8330d294bae243d212670df5f416760a25a4d5d0fb20aa39153157a93e",
+      "now": 1767225600,
+      "valid": false,
+      "reason": "malformed_header"
+    },
+    {
+      "name": "empty header",
+      "header": "",
+      "now": 1767225600,
+      "valid": false,
+      "reason": "malformed_header"
+    },
+    {
+      "name": "non-hex signature",
+      "header": "t=1767225600,v1=zzzz",
+      "now": 1767225600,
+      "valid": false,
+      "reason": "signature_mismatch"
+    }
+  ]
+}

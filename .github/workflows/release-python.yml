@@ -1,0 +1,29 @@
+name: release-python
+on: { push: { tags: ["python-v*"] } }
+permissions: { contents: write }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: packages/python } }
+    steps:
+      - uses: actions/checkout@v4
+      - run: node scripts/check-version.mjs python "${GITHUB_REF_NAME#python-v}"
+        working-directory: .
+      - run: scripts/check-placeholders.sh
+        working-directory: .
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e '.[dev]' build && pytest && python -m build
+      - uses: actions/upload-artifact@v4
+        with: { name: dist, path: packages/python/dist }
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions: { id-token: write, contents: write }   # id-token: PyPI trusted publishing
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: dist, path: dist }
+      - uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: softprops/action-gh-release@v2
+        with: { generate_release_notes: true }

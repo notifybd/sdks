@@ -1,0 +1,22 @@
+name: ci-python
+on:
+  push: { branches: [main], paths: ["packages/python/**", "spec/**", ".github/workflows/ci-python.yml"] }
+  pull_request: { paths: ["packages/python/**", "spec/**", ".github/workflows/ci-python.yml"] }
+permissions: { contents: read }
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: { python: ["3.9", "3.10", "3.11", "3.12", "3.13"] }
+    defaults: { run: { working-directory: packages/python } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ matrix.python }}", cache: pip, cache-dependency-path: packages/python/pyproject.toml }
+      - run: pip install -e '.[dev]'
+      - run: pytest
+      - run: ruff check .
+      - run: mypy
+        if: matrix.python != '3.9'   # mypy 1.x dropped Python 3.9 as a runtime; the code is still checked on 3.10+
+      - run: pip install build && python -m build

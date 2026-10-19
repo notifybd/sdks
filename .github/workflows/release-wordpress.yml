@@ -1,0 +1,32 @@
+name: release-wordpress
+on: { push: { tags: ["wordpress-v*"] } }
+permissions: { contents: write }
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node scripts/check-version.mjs wordpress "${GITHUB_REF_NAME#wordpress-v}"
+      - run: scripts/check-placeholders.sh
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: "8.3", tools: composer }
+      - run: composer install --no-interaction && composer test
+        working-directory: packages/wordpress
+      - name: Build the plugin zip
+        run: |
+          cd packages/wordpress
+          zip -r "../../notify-bd-${GITHUB_REF_NAME#wordpress-v}.zip" notify-bd -x '*.DS_Store' '*/.gitkeep'
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: notify-bd-*.zip
+      # Deploys trunk + a version tag to the WordPress.org SVN. Requires the plugin to be approved
+      # first and the SVN_USERNAME / SVN_PASSWORD secrets (see docs/RELEASING.md).
+      - uses: 10up/action-wordpress-plugin-deploy@stable
+        if: ${{ vars.WP_ORG_DEPLOY == 'true' }}
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: notify-bd
+          BUILD_DIR: packages/wordpress/notify-bd
+          VERSION: ${{ github.ref_name }}
