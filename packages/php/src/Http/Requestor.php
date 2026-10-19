@@ -6,7 +6,6 @@ namespace NotifyBd\Http;
 
 use NotifyBd\Exception\ApiConnectionException;
 use NotifyBd\Exception\ApiException;
-use NotifyBd\Exception\NotifyException;
 use NotifyBd\Version;
 
 /**
