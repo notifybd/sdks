@@ -6,7 +6,7 @@
   "keywords": ["notify", "sms", "otp", "bangladesh", "transactional", "webhook", "sdk"],
   "homepage": "https://github.com/notifybd/notify-php",
   "support": {
-    "issues": "https://github.com/notifybd/notify-sdks/issues",
+    "issues": "https://github.com/notifybd/sdks/issues",
     "source": "https://github.com/notifybd/notify-php"
   },
   "require": {

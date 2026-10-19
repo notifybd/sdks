@@ -4,13 +4,13 @@
   "description": "Official Node.js SDK for the Notify transactional messaging API: send OTP and transactional messages app-first with SMS fallback, track delivery, verify webhooks.",
   "keywords": ["notify", "sms", "otp", "bangladesh", "transactional", "webhook", "sdk"],
   "license": "MIT",
-  "homepage": "https://github.com/notifybd/notify-sdks/tree/main/packages/node#readme",
+  "homepage": "https://github.com/notifybd/sdks/tree/main/packages/node#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/notifybd/notify-sdks.git",
+    "url": "git+https://github.com/notifybd/sdks.git",
     "directory": "packages/node"
   },
-  "bugs": { "url": "https://github.com/notifybd/notify-sdks/issues" },
+  "bugs": { "url": "https://github.com/notifybd/sdks/issues" },
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.cjs",

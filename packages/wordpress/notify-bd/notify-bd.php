@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Notify for WordPress
- * Plugin URI:        https://github.com/notifybd/notify-sdks/tree/main/packages/wordpress
+ * Plugin URI:        https://github.com/notifybd/sdks/tree/main/packages/wordpress
  * Description:       Send OTP and transactional messages through Notify (app-first, SMS fallback) from WordPress, and receive delivery status webhooks.
  * Version:           0.1.0
  * Requires at least: 6.0

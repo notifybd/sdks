@@ -31,9 +31,9 @@ dependencies = ["httpx>=0.27,<1"]
 dev = ["pytest>=8", "pytest-asyncio>=0.24", "mypy>=1.11", "ruff>=0.6"]
 
 [project.urls]
-Homepage = "https://github.com/notifybd/notify-sdks/tree/main/packages/python"
-Issues = "https://github.com/notifybd/notify-sdks/issues"
-Changelog = "https://github.com/notifybd/notify-sdks/blob/main/packages/python/CHANGELOG.md"
+Homepage = "https://github.com/notifybd/sdks/tree/main/packages/python"
+Issues = "https://github.com/notifybd/sdks/issues"
+Changelog = "https://github.com/notifybd/sdks/blob/main/packages/python/CHANGELOG.md"
 
 [tool.hatch.version]
 path = "src/notifybd/_version.py"
