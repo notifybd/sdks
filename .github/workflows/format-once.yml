@@ -1,6 +1,6 @@
 name: format-once
 # One-off: runs the PHP auto-fixers and commits the result. Triggers only when this file is pushed,
-# and is deleted again right after.
+# and is deleted again right after. (run 2: php-cs-fixer config needed setRiskyAllowed)
 on:
   push:
     branches: [main]
